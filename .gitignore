@@ -28,17 +28,8 @@ pids/
 Thumbs.db
 
 # Docker
-docker-compose.override.yml
-docker-compose.override.yaml
-docker-compose.*.yml
-docker-compose.*.yaml
-*.tar
-.dockerignore
 
 # Kubernetes
-*.yaml
-*.yml
-!k8s/
 k8s/tmp/
 k8s/secrets/
 k8s/.generated/
@@ -92,3 +83,7 @@ temp/
 
 # Local dev tools
 .local/
+
+#Compress
+*.tar
+*.zip

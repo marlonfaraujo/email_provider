@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: app_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/workspace
+    networks:
+      - app-network
+
+  mongodb:
+    container_name: app_nosql
+    image: mongo:8.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # Porta do protocolo AMQP
+      - "15672:15672"   # Porta da interface de gerenciamento
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app-network
+
+volumes:
+  mongodb-data:
+  rabbitmq_data:
+
+networks:
+  app-network:

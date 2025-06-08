@@ -1,17 +1,16 @@
 // See https://containers.dev/implementors/json_reference/ for configuration reference
 {
 	"name": "Untitled Node.js project",
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
-  	"remoteUser": "node",
+	"dockerComposeFile": "../docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/workspace",
   	"features": {},
-  
   	"customizations": {
 		"vscode": {
 			"extensions": [
 				"ms-azuretools.vscode-docker",
-				"ms-kubernetes-tools.vscode-kubernetes-tools"
+				"ms-kubernetes-tools.vscode-kubernetes-tools",
+				"mongodb.mongodb-vscode"
 			]
 		}
   	}
