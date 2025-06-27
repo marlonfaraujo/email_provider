@@ -20,6 +20,6 @@ test("Must create the message record and return the result by searching by field
 
     const messages = await new ListEmailMessage(repository).execute();
     expect(messages).toBeDefined();
-    expect(messages.find(x => x.messageParameter.recipient.to)).toBeDefined();
-    expect(messages.find(x => x.messageParameter.recipient.to.find(email => dto.to.includes(email.getValue())))?.id).toBeDefined();
+    expect(messages.find(x => x.recipients)).toBeDefined();
+    expect(messages.find(x => x.recipients.some((email: string) => dto.to.includes(email)))?.id).toBeDefined();
 });

@@ -20,7 +20,20 @@ export default class EmailProviderFeature {
         this.httpServer.route("get", "/providers", async (params: any, body: any) => {
             const getProviders = new ListEmailProvider(this.repository);
             const providers = await getProviders.execute();
-            return providers;
+            const response : EmailProviderResponse[] = providers.map(provider => ({
+                id: provider.id,
+                server: provider.server,
+                port: provider.port,
+                level: provider.level
+            }))
+            return response;
         });
     }
+}
+
+export type EmailProviderResponse = {
+	id: string;
+    server: string,
+    port: string,
+    level: string
 }

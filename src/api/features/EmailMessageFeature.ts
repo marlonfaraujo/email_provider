@@ -21,7 +21,22 @@ export default class EmailMessageFeature {
 		this.httpServer.route("get", "/messages", async (params: any, body: any) => {
 			const getMessages = new ListEmailMessage(this.repository);
 			const messages = await getMessages.execute();
-			return messages;
+			const response: EmailMessageResponse[] = messages.map(message => ({
+				id: message.id,
+				status: message.status,
+				subject: message.subject,
+				from: message.from,
+				recipient: message.recipients.join(";")
+			}));
+			return response;
 		});
 	}
+}
+
+export type EmailMessageResponse = {
+	id: string,
+	status: string,
+	subject: string,
+	from: string,
+	recipient: string
 }

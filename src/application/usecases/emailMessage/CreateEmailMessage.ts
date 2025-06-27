@@ -12,9 +12,10 @@ export default class CreateEmailMessage{
 
     }
 
-    async execute(messageDto: EmailMessageDto): Promise<void>{
+    async execute(messageDto: EmailMessageDto): Promise<string>{
         const message = new EmailMessage(this.idGenerator.generate(), 
             EmailMessageParameter.create(messageDto.body, messageDto.subject, messageDto.from, messageDto.to, messageDto.cc, messageDto.cco));
         await this.emailMessageRepository.save(message);
+        return message.id;
     }
 }

@@ -1,5 +1,5 @@
-import { EmailProvider } from "../../../domain/entities/EmailProvider";
 import EmailProviderRepository from "../../../domain/repositories/EmailProviderRepositoy";
+import { EmailProviderResultDto } from "../../dtos/EmailProviderResultDto";
 
 export default class ListEmailProvider {
 
@@ -7,7 +7,14 @@ export default class ListEmailProvider {
 
     }
 
-    async execute(): Promise<EmailProvider[]>{
-        return await this.repository.get();
+    async execute(): Promise<EmailProviderResultDto[]>{
+        const items = await this.repository.get();
+        const result: EmailProviderResultDto[] = items.map(item => ({
+            id: item.id,
+            server: item.server,
+            port: item.port,
+            level: item.getLevel()
+        }));
+        return result;
     }
 }

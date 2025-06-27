@@ -5,7 +5,7 @@ export class EmailSchedule{
     
     readonly id: string;
     name: string;
-    scheduledDate: Date;
+    private scheduledDate: Date;
     private scheduleStatus: string;
     messageParameter: EmailMessageParameter;
     private publishStatus: string;
@@ -20,24 +20,30 @@ export class EmailSchedule{
         this.publishStatus = MessageStatusEnum.Pending;
         this.publishDate = null;
     }
-    
+
+    getScheduleDate(): Date {
+        return this.scheduledDate;
+    }
+    getPublishDate(): Date | null {
+        return this.publishDate;
+    }    
     //change all (properties name, scheduledDate, messageParameter)
     update(): void{
         this.scheduleStatus = ScheduleStatus.Updated;
     }
-
     cancel(): void{
         this.scheduleStatus = ScheduleStatus.Cancelled;
     }
-
     getScheduleStatus(): string{
         return this.scheduleStatus;
     }
-
     //for queue
     publish(): void{
         this.publishStatus = MessageStatusEnum.Published;
         this.publishDate = new Date();
+    }
+    getPublishStatus(): string{
+        return this.publishStatus;
     }
 
 }

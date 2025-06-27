@@ -10,7 +10,7 @@ export default class Email {
         return this.value;
     }
 
-    splitWithSeparator(emails: Email[], separator: string = ",") : string{
+    static splitWithSeparator(emails: Email[], separator: string = ",") : string{
         return emails.map(x => x.getValue()).join(separator);
     }
     
