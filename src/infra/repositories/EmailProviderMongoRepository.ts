@@ -2,45 +2,38 @@ import { ObjectId } from "mongodb";
 import { EmailProvider } from "../../domain/entities/EmailProvider";
 import EmailProviderRepository from "../../domain/repositories/EmailProviderRepositoy";
 import NoSqlDatabaseConnectionAbstraction from "../database/NoSqlDatabaseConnectionAbstraction";
+import BaseMongoRepository from "./BaseMongoRepository";
 
-export default class EmailProviderMongoRepository implements EmailProviderRepository {
+export default class EmailProviderMongoRepository extends BaseMongoRepository implements EmailProviderRepository {
 
-    collectionName: string = "providers" as const;
+    private collectionName: string = "providers" as const;
 
     constructor(readonly connection: NoSqlDatabaseConnectionAbstraction){
-
+        super(connection);
     }
 
     async save(provider: EmailProvider): Promise<void> {
-        const db = await this.connection.db();
-        const providers = db.collection(this.collectionName);
-        const result = await providers.insertOne(this.connection.toDocument(provider));
-        console.log(result);
+        const providers = await this.getCollection<EmailProvider>(this.collectionName);
+        await providers.insertOne(this.toDocument(provider));
     }
 
-    async getById(id: string): Promise<EmailProvider | undefined> {
-        const db = await this.connection.db();
-        const providers = db.collection(this.collectionName);
-        const result = await providers.findOne({ _id: new ObjectId(id) });
-        console.log(result);
-        return result;
+    async getById(id: string): Promise<EmailProvider | null> {
+        const providers = await this.getCollection<EmailProvider>(this.collectionName);
+        const result = await providers.findOne<any>({ _id: new ObjectId(id) });
+        return new EmailProvider(result._id, result.server, result.port, result.credentials, result.level);
     }
 
     async update(provider: EmailProvider, id: string): Promise<void> {
-        const db = await this.connection.db();
-        const providers = db.collection(this.collectionName);
-        const updateResult = await providers.updateOne(
+        const providers = await this.getCollection(this.collectionName);
+        await providers.updateOne(
             { _id: new ObjectId(id) },
-            { $set: this.connection.toDocument(provider) }
+            { $set: this.toDocument(provider) }
         );
-        console.log(updateResult);
     }
 
     async get(): Promise<EmailProvider[]> {
-        const db = await this.connection.db();
-        const providers = db.collection(this.collectionName);
-        const result = await providers.find().toArray();
-        console.log(result);
+        const providers = await this.getCollection(this.collectionName);
+        const result = await providers.find<any>({}).toArray();
         return result.map((x: any) => new EmailProvider(x._id, x.server, x.port, x.credentials, x.level));
     }
 

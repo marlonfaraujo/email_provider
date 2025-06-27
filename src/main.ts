@@ -4,4 +4,4 @@ import Router from "./api/Router";
 const httpServer = new ExpressAdapter();
 const router = new Router(httpServer);
 router.init();
-httpServer.listen(3000);  
+httpServer.listen(3005);  

@@ -11,14 +11,14 @@ export default class EmailMessageFeature {
         readonly idGenerator: IdGeneratorAbstraction) {
 	}
 
-	async init () {
-		this.httpServer.on("post", "/messages", async (params: any, body: any) => {
+	async config () {
+		this.httpServer.route("post", "/messages", async (params: any, body: any) => {
 			console.log(body);
 			const createMessage = new CreateEmailMessage(this.repository, this.idGenerator);
 			await createMessage.execute(body);
 		});
 		
-		this.httpServer.on("get", "/messages", async (params: any, body: any) => {
+		this.httpServer.route("get", "/messages", async (params: any, body: any) => {
 			const getMessages = new ListEmailMessage(this.repository);
 			const messages = await getMessages.execute();
 			return messages;

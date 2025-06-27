@@ -13,8 +13,11 @@ export default class EmailProviderMemoryRepository implements EmailProviderRepos
         this.providers.push(provider);
     }
     
-    async getById(id: string): Promise<EmailProvider | undefined> {
+    async getById(id: string): Promise<EmailProvider | null> {
         const provider = this.providers.find(x => x.id === id);
+        if(!provider){
+            return null;
+        }
         return provider;
     }
     

@@ -8,8 +8,11 @@ export default class EmailScheduleMemoryRepository implements EmailScheduleRepos
         this.schedules = [];
     }
 
-    async getById(id: string): Promise<EmailSchedule | undefined> {
+    async getById(id: string): Promise<EmailSchedule | null> {
         const schedule = this.schedules.find(x => x.id === id);
+        if(!schedule){
+            return null;
+        }
         return schedule;
     }
     

@@ -2,7 +2,7 @@
 {
 	"name": "Untitled Node.js project",
 	"dockerComposeFile": "../docker-compose.yml",
-	"service": "app",
+	"service": "email-provider-api",
 	"workspaceFolder": "/workspace",
   	"features": {},
   	"customizations": {

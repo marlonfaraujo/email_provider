@@ -11,13 +11,13 @@ export default class EmailProviderFeature {
         readonly idGenerator: IdGeneratorAbstraction) {
     }
 
-    async init () {
-        this.httpServer.on("post", "/providers", async (params: any, body: any) => {
+    async config () {
+        this.httpServer.route("post", "/providers", async (params: any, body: any) => {
             const createProvider = new CreateEmailProvider(this.repository, this.idGenerator);
             await createProvider.execute(body);
         });
         
-        this.httpServer.on("get", "/providers", async (params: any, body: any) => {
+        this.httpServer.route("get", "/providers", async (params: any, body: any) => {
             const getProviders = new ListEmailProvider(this.repository);
             const providers = await getProviders.execute();
             return providers;

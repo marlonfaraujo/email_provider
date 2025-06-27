@@ -1,15 +1,17 @@
-import  { MongoClient, ObjectId } from "mongodb";
+import  { Db, MongoClient } from "mongodb";
 import NoSqlDatabaseConnectionAbstraction from "./NoSqlDatabaseConnectionAbstraction";
 
 export default class MongoDatabase implements NoSqlDatabaseConnectionAbstraction {
 
-    private client: any;
+    private readonly client: MongoClient;
+    private readonly dbName: string;
 
-    constructor(readonly dbName: string){
+    constructor(){
+        this.dbName = "email_provider";
         this.client = new MongoClient("mongodb://mongodb:27017");
     }
 
-    async db(): Promise<any> {
+    async db(): Promise<Db> {
         await this.client.connect()
         return this.client.db(this.dbName);
     }
@@ -18,12 +20,5 @@ export default class MongoDatabase implements NoSqlDatabaseConnectionAbstraction
         await this.client.close();
     }
 
-    toDocument(obj: any): any {
-        if (obj.id) {
-            obj._id = new ObjectId(obj.id);
-            delete obj.id;
-        }
-        return obj;
-    }
 
 }

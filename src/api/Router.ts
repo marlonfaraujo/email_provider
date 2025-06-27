@@ -21,7 +21,7 @@ export default class Router {
 
     constructor(readonly httpServer: HttpServer){
         this.uuid = new MongoObjectIdGenerator();
-        this.connection = new MongoDatabase("email_provider");
+        this.connection = new MongoDatabase();
     }
 
     init(): void{
@@ -34,20 +34,20 @@ export default class Router {
         //const repository = new EmailMessageMemoryRepository();
         const repository = new EmailMessageMongoRepository(this.connection);
         const feature = new EmailMessageFeature(this.httpServer, repository, this.uuid);
-        feature.init();
+        feature.config();
     }
 
     private initEmailScheduleFeature(): void{
         //const repository = new EmailScheduleMemoryRepository();
         const repository = new EmailScheduleMongoRepository(this.connection);
         const feature = new EmailScheduleFeature(this.httpServer, repository, this.uuid);
-        feature.init();
+        feature.config();
     }
 
     private initEmailProviderFeature(): void{
         //const repository = new EmailProviderMemoryRepository();
         const repository = new EmailProviderMongoRepository(this.connection);
         const feature = new EmailProviderFeature(this.httpServer, repository, this.uuid);
-        feature.init();
+        feature.config();
     }
 }

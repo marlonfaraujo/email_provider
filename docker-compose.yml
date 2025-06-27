@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  app:
-    container_name: app_api
+  email-provider-api:
+    container_name: email_provider_api
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,21 +11,21 @@ services:
     volumes:
       - ./:/workspace
     networks:
-      - app-network
+      - email-provider-network
 
-  mongodb:
-    container_name: app_nosql
+  email-provider-mongodb:
+    container_name: email_provider_mongodb
     image: mongo:8.0
     ports:
       - "27017:27017"
     volumes:
       - mongodb-data:/data/db
     networks:
-      - app-network
+      - email-provider-network
 
-  rabbitmq:
+  email-provider-rabbitmq:
     image: rabbitmq:4.0-management
-    container_name: rabbitmq
+    container_name: email_provider_rabbitmq
     ports:
       - "5672:5672"     # Porta do protocolo AMQP
       - "15672:15672"   # Porta da interface de gerenciamento
@@ -35,11 +35,11 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
-      - app-network
+      - email-provider-network
 
 volumes:
   mongodb-data:
   rabbitmq_data:
 
 networks:
-  app-network:
+  email-provider-network: {}

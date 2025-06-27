@@ -9,7 +9,7 @@ export default class ExpressAdapter implements HttpServer {
 		this.app.use(express.json());
 	}
 
-	on(method: string, url: string, callback: Function): void {
+	route(method: string, url: string, callback: Function): void {
 		this.app[method](url, async function (req: Request, res: Response) {
 			const output = await callback(req.params, req.body);
 			res.json(output);

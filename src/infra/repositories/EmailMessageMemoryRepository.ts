@@ -13,8 +13,11 @@ export default class EmailMessageMemoryRepository implements EmailMessageReposit
         this.messages.push(message);
     }
 
-    async getById(id: string): Promise<EmailMessage | undefined> {
-        const message = this.messages.find(x => x.id === id); 
+    async getById(id: string): Promise<EmailMessage | null> {
+        const message = this.messages.find(x => x.id === id);
+        if(!message) {
+            return null;
+        } 
         return message;
     }
 

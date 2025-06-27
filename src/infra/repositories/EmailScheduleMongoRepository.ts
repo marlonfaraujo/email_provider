@@ -2,45 +2,38 @@ import { ObjectId } from "mongodb";
 import { EmailSchedule } from "../../domain/entities/EmailSchedule";
 import EmailScheduleRepository from "../../domain/repositories/EmailScheduleRepository";
 import NoSqlDatabaseConnectionAbstraction from "../database/NoSqlDatabaseConnectionAbstraction";
+import BaseMongoRepository from "./BaseMongoRepository";
 
-export default class EmailScheduleMongoRepository implements EmailScheduleRepository {
+export default class EmailScheduleMongoRepository extends BaseMongoRepository implements EmailScheduleRepository {
     
-    collectionName: string = "schedules" as const;
+    private collectionName: string = "schedules" as const;
 
     constructor(readonly connection: NoSqlDatabaseConnectionAbstraction){
-
+        super(connection);
     }
 
     async save(schedule: EmailSchedule): Promise<void> {
-        const db = await this.connection.db();
-        const schedules = db.collection(this.collectionName);
-        const result = await schedules.insertOne(this.connection.toDocument(schedule));
-        console.log(result);
+        const schedules = await this.getCollection<EmailSchedule>(this.collectionName);
+        await schedules.insertOne(this.toDocument(schedule));
     }
 
-    async getById(id: string): Promise<EmailSchedule | undefined> {
-        const db = await this.connection.db();
-        const schedules = db.collection(this.collectionName);
-        const result = await schedules.findOne({ _id: new ObjectId(id) });
-        console.log(result);
-        return result;
+    async getById(id: string): Promise<EmailSchedule | null> {
+        const schedules = await this.getCollection(this.collectionName);
+        const result = await schedules.findOne<any>({ _id: new ObjectId(id) });
+        return new EmailSchedule(result._id, result.name, result.messageParameter);
     }
 
     async update(schedule: EmailSchedule, id: string): Promise<void> {
-        const db = await this.connection.db();
-        const schedules = db.collection(this.collectionName);
-        const updateResult = await schedules.updateOne(
+        const schedules = await this.getCollection<EmailSchedule>(this.collectionName);
+        await schedules.updateOne(
             { _id: new ObjectId(id) },
-            { $set: this.connection.toDocument(schedule) }
+            { $set: this.toDocument(schedule) }
         );
-        console.log(updateResult);
     }
 
     async get(): Promise<EmailSchedule[]> {
-        const db = await this.connection.db();
-        const schedules = db.collection(this.collectionName);
-        const result = await schedules.find().toArray();
-        console.log(result);
+        const schedules = await this.getCollection<EmailSchedule>(this.collectionName);
+        const result = await schedules.find<any>({}).toArray();
         return result.map((x: any) => new EmailSchedule(x._id, x.name, x.messageParameter));
     }
 
