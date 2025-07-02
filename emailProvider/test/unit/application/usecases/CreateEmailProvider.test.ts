@@ -1,7 +1,7 @@
-import CreateEmailProvider from "../../../../src/application/usecases/provider/CreateEmailProvider";
-import ListEmailProvider from "../../../../src/application/usecases/provider/ListEmailProvider";
-import EmailProviderMemoryRepository from "../../../../src/infra/repositories/EmailProviderMemoryRepository";
-import { CryptoUuidGenerator } from "../../../../src/infra/uuid/CryptoUuidGenerator";
+import CreateEmailProvider from "../../../../emailProvider/src/application/usecases/provider/CreateEmailProvider";
+import ListEmailProvider from "../../../../emailProvider/src/application/usecases/provider/ListEmailProvider";
+import EmailProviderMemoryRepository from "../../../../emailProvider/src/infra/repositories/EmailProviderMemoryRepository";
+import { CryptoUuidGenerator } from "../../../../emailProvider/src/infra/uuid/CryptoUuidGenerator";
 
 test("Must create the provider record and return the result by searching for by server field", async () => {
     const repository = new EmailProviderMemoryRepository();

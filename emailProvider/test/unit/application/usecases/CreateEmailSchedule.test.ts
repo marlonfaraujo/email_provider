@@ -1,7 +1,7 @@
-import CreateEmailSchedule from "../../../../src/application/usecases/schedule/CreateEmailSchedule";
-import ListEmailSchedule from "../../../../src/application/usecases/schedule/ListEmailSchedule";
-import EmailScheduleMemoryRepository from "../../../../src/infra/repositories/EmailScheduleMemoryRepository";
-import { CryptoUuidGenerator } from "../../../../src/infra/uuid/CryptoUuidGenerator";
+import CreateEmailSchedule from "../../../../emailProvider/src/application/usecases/schedule/CreateEmailSchedule";
+import ListEmailSchedule from "../../../../emailProvider/src/application/usecases/schedule/ListEmailSchedule";
+import EmailScheduleMemoryRepository from "../../../../emailProvider/src/infra/repositories/EmailScheduleMemoryRepository";
+import { CryptoUuidGenerator } from "../../../../emailProvider/src/infra/uuid/CryptoUuidGenerator";
 
 test("Must create schedule record and return non-null id", async() => {
     const repository = new EmailScheduleMemoryRepository();

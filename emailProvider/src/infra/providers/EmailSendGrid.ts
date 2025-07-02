@@ -2,6 +2,7 @@ import EmailProviderAbstraction from "../../application/abstractions/EmailProvid
 import { SendEmailDto } from "../../application/dtos/SendEmailDto";
 import { MailService } from '@sendgrid/mail';
 import { SendEmailResultDto } from "../../application/dtos/SendEmailResultDto";
+import SendEmailException from "../../application/exceptions/SendEmailException";
 
 export default class EmailSendGrid implements EmailProviderAbstraction {
     
@@ -25,8 +26,9 @@ export default class EmailSendGrid implements EmailProviderAbstraction {
         };
         const [sendEmailResponse] = await this.mailService.send(msg);
         if (sendEmailResponse.statusCode >= 400) {
-            throw new Error("Error status code: " + sendEmailResponse.statusCode);
+            const exception = new SendEmailException(sendEmailResponse.body, sendEmailResponse.statusCode);
             console.log(sendEmailResponse.body);
+            throw exception;
         }
         const result: SendEmailResultDto = { statusCode: sendEmailResponse.statusCode, body: sendEmailResponse.body };
         return result;

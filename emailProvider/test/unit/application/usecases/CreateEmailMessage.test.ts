@@ -1,7 +1,7 @@
-import CreateEmailMessage from "../../../../src/application/usecases/emailMessage/CreateEmailMessage";
-import ListEmailMessage from "../../../../src/application/usecases/emailMessage/ListEmailMessage";
-import EmailMessageMemoryRepository from "../../../../src/infra/repositories/EmailMessageMemoryRepository";
-import { CryptoUuidGenerator } from "../../../../src/infra/uuid/CryptoUuidGenerator";
+import CreateEmailMessage from "../../../../emailProvider/src/application/usecases/emailMessage/CreateEmailMessage";
+import ListEmailMessage from "../../../../emailProvider/src/application/usecases/emailMessage/ListEmailMessage";
+import EmailMessageMemoryRepository from "../../../../emailProvider/src/infra/repositories/EmailMessageMemoryRepository";
+import { CryptoUuidGenerator } from "../../../../emailProvider/src/infra/uuid/CryptoUuidGenerator";
 
 test("Must create the message record and return the result by searching by field of the recipient object", async () => {
     const repository = new EmailMessageMemoryRepository();

@@ -1,4 +1,4 @@
-import { EmailProvider, EmailProviderLevel } from "../../../src/domain/entities/EmailProvider"
+import { EmailProvider, EmailProviderLevel } from "../../../emailProvider/src/domain/entities/EmailProvider"
 
 test("Must change the primary provider to secondary", () => {
     const provider = new EmailProvider("","","","", EmailProviderLevel.Primary);
