@@ -5,14 +5,26 @@ services:
     container_name: email_provider_api
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./emailProvider/Dockerfile
     ports:
       - "3500:3500"
     volumes:
-      - ./:/workspace
+      - ./emailProvider/:/workspace
     environment:
       - SENDGRID_API_KEY=token
       - SENDGRID_FROM_EMAIL=email@email.com
+    networks:
+      - email-provider-network
+  
+  email-provider-publisher-api:
+    container_name: email_provider_publisher_api
+    build:
+      context: .
+      dockerfile: ./publisher/Dockerfile
+    ports:
+      - "3501:3501"
+    volumes:
+      - ./publisher/:/workspace
     networks:
       - email-provider-network
 
