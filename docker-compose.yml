@@ -7,9 +7,12 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3500:3500"
     volumes:
       - ./:/workspace
+    environment:
+      - SENDGRID_API_KEY=token
+      - SENDGRID_FROM_EMAIL=email@email.com
     networks:
       - email-provider-network
 
