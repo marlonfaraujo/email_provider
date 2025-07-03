@@ -1,4 +1,4 @@
-export type QueueParams = {
+export type QueueParamsDto = {
     exchange: string;
     routingKey: string;
     queueName: string;

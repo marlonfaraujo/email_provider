@@ -1,6 +1,6 @@
 import { Kafka } from "kafkajs";
-import QueueAbstraction from "../../application/abstractions/QueueAbstraction";
-import { QueueParams } from "../../application/dtos/QueueParams";
+import QueueAbstraction from "./QueueAbstraction";
+import { QueueParamsDto } from "./QueueParamsDto";
 
 export default class KafkaServer implements QueueAbstraction {
 
@@ -15,7 +15,7 @@ export default class KafkaServer implements QueueAbstraction {
         return Promise.resolve();
     }
     
-    async publish(queueParams: QueueParams, message: any): Promise<void> {
+    async publish(queueParams: QueueParamsDto, message: any): Promise<void> {
         const producer = this.kafka?.producer();
         const input: any = {
             key: queueParams.queueName,

@@ -1,5 +1,5 @@
 import { circuitBreaker, CircuitBreakerPolicy, ConsecutiveBreaker, ExponentialBackoff, handleAll, retry, RetryPolicy } from "cockatiel";
-import ResilientExecutorAbstraction from "../../application/abstractions/ResilientExecutorAbstraction";
+import ResilientExecutorAbstraction from "./ResilientExecutorAbstraction";
 
 export default class CocatielExecutor implements ResilientExecutorAbstraction {
     

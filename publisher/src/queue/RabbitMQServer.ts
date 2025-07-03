@@ -1,6 +1,6 @@
 import amqp, { ConfirmChannel } from "amqplib";
-import QueueAbstraction from "../../application/abstractions/QueueAbstraction";
-import { QueueParams } from "../../application/dtos/QueueParams";
+import QueueAbstraction from "./QueueAbstraction";
+import { QueueParamsDto } from "./QueueParamsDto";
 
 export default class RabbitMQServer  implements QueueAbstraction {
     
@@ -13,7 +13,7 @@ export default class RabbitMQServer  implements QueueAbstraction {
         this.connection = await amqp.connect("amqp://admin:admin@rabbitmq:5672");
     }
 
-    async publish(queueParams: QueueParams, message: any): Promise<void> {
+    async publish(queueParams: QueueParamsDto, message: any): Promise<void> {
         const channel = await this.connection.createConfirmChannel();
         this.config(queueParams, channel, { durable: true });
 
@@ -22,7 +22,7 @@ export default class RabbitMQServer  implements QueueAbstraction {
         Promise.race([timeoutError, this.publishWithConfirmChannel(channel, queueParams, message)]);
     }
 
-    private publishWithConfirmChannel(channel: ConfirmChannel, queueParams: QueueParams, message: any): Promise<any> {
+    private publishWithConfirmChannel(channel: ConfirmChannel, queueParams: QueueParamsDto, message: any): Promise<any> {
         return new Promise((resolve, reject) => {
             const onReturn = (msg: any) => {
                 channel.off('return', onReturn);
@@ -52,7 +52,7 @@ export default class RabbitMQServer  implements QueueAbstraction {
         await this.connection.close();
     }    
 
-    private async config(queueParams: QueueParams, channel: any, options: any): Promise<void>{
+    private async config(queueParams: QueueParamsDto, channel: any, options: any): Promise<void>{
         await channel.assertExchange(queueParams.exchange, queueParams.type, options);
         await channel.assertQueue(queueParams.queueName, options);
         await channel.bindQueue(queueParams.queueName, queueParams.exchange, queueParams.routingKey);
