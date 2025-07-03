@@ -10,7 +10,12 @@ services:
       - "3500:3500"
     volumes:
       - ./:/workspace
+    depends_on:
+      - email-provider-redis
     environment:
+      - REDIS_HOST=email-provider-redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=redis
       - SENDGRID_API_KEY=token
       - SENDGRID_FROM_EMAIL=email@email.com
     networks:

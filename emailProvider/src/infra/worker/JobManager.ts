@@ -1,26 +1,22 @@
 import EmailProviderAbstraction from "../../application/abstractions/EmailProviderAbstraction";
 import JobWorkerAbstraction from "../../application/abstractions/JobWorkerAbstraction";
 import CacheConnectionAbstraction from "../database/CacheConnectionAbstraction";
-import RedisConnection from "../database/RedisConnection";
 import EmailSendGrid from "../providers/EmailSendGrid";
 import BullMQWorker from "./BullMQWorker";
 import EmailJob from "./EmailJob";
 
 export default class JobManager {
-
-    private readonly connection: CacheConnectionAbstraction;
     
-    constructor(){
-        this.connection = new RedisConnection();
+    constructor(readonly cacheConnection: CacheConnectionAbstraction){
     }
 
     config(): void {
-        this.emailConfig();
+        this.emailJobConfig();
     }
 
-    private emailConfig(): void {
+    private emailJobConfig(): void {
         const worker: JobWorkerAbstraction = new BullMQWorker(
-            this.connection,
+            this.cacheConnection,
             "email-queue",
             5 // concurrency
         );

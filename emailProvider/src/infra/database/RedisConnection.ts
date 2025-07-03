@@ -7,9 +7,15 @@ export default class RedisConnection implements CacheConnectionAbstraction {
 
     constructor() {
         this.redis = new IORedis({
-            host: process.env.REDIS_HOST ?? "localhost",
+            host: process.env.REDIS_HOST,
             port: Number(process.env.REDIS_PORT ?? 6379),
+            password: process.env.REDIS_PASSWORD,
+            maxRetriesPerRequest: null
         });
+    }
+
+    connection(): any {
+        return this.redis;
     }
 
 }

@@ -2,7 +2,7 @@ import IdGeneratorAbstraction from "../../application/abstractions/IdGeneratorAb
 import CreateEmailProvider from "../../application/usecases/provider/CreateEmailProvider";
 import ListEmailProvider from "../../application/usecases/provider/ListEmailProvider";
 import EmailProviderRepository from "../../domain/repositories/EmailProviderRepositoy";
-import HttpServer from "../HttpServer";
+import HttpServer from "../api/HttpServer";
 
 export default class EmailProviderFeature {
     

@@ -10,12 +10,12 @@ export default class RabbitMQServer  implements QueueAbstraction {
     }
     
     async connect(): Promise<void> {
-        this.connection = await amqp.connect("amqp://admin:admin@rabbitmq:5672");
+        this.connection = await amqp.connect("amqp://admin:admin@email-provider-rabbitmq:5672");
     }
 
     async consume(queueParams: QueueParams, callback: Function): Promise<void> {
         const channel =  await this.connection.createChannel();
-        this.config(queueParams, channel, { durable: true });
+        await this.config(queueParams, channel, { durable: true });
 
         channel.consume(queueParams.queueName, async (message: any) => {
             if (!message){

@@ -1,6 +1,14 @@
 import EmailProviderAbstraction from "../../application/abstractions/EmailProviderAbstraction";
+import IdGeneratorAbstraction from "../../application/abstractions/IdGeneratorAbstraction";
 import JobWorkerAbstraction from "../../application/abstractions/JobWorkerAbstraction";
+import { SendEmailDto } from "../../application/dtos/SendEmailDto";
+import CreateEmailMessage from "../../application/usecases/emailMessage/CreateEmailMessage";
+import EmailMessageRepository from "../../domain/repositories/EmailMessageRepository";
+import MongoDatabase from "../database/MongoDatabase";
+import NoSqlDatabaseConnectionAbstraction from "../database/NoSqlDatabaseConnectionAbstraction";
 import EmailSendGrid from "../providers/EmailSendGrid";
+import EmailMessageMongoRepository from "../repositories/EmailMessageMongoRepository";
+import MongoObjectIdGenerator from "../uuid/MongoObjectIdGenerator";
 
 export default class EmailJob {
 
@@ -11,8 +19,21 @@ export default class EmailJob {
 
     async config(): Promise<void> {
         const emailProvider: EmailProviderAbstraction = new EmailSendGrid();
-		await this.worker.start(async(payload: any) => {
-			await emailProvider.sendEmail(payload);
+        const connection: NoSqlDatabaseConnectionAbstraction = new MongoDatabase();
+        const emailRepository: EmailMessageRepository = new EmailMessageMongoRepository(connection);
+        const idGenerator: IdGeneratorAbstraction = new MongoObjectIdGenerator();
+		await this.worker.start(async(job: any) => {
+            const input : SendEmailDto = {
+                to: job.data?.to![0],
+                from: job.data?.from,
+                subject: job.data?.subject,
+                body: job.data?.body,
+                cc: job.data?.cc || [],
+                bcc: job.data?.cco || []
+            };
+			await emailProvider.sendEmail(input);
+            const createEmailMessage = new CreateEmailMessage(emailRepository, idGenerator);
+            await createEmailMessage.execute(job.data);
 		});
     }
 }

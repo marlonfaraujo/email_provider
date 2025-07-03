@@ -26,7 +26,7 @@ export default class EmailSendGrid implements EmailProviderAbstraction {
         };
         const [sendEmailResponse] = await this.mailService.send(msg);
         if (sendEmailResponse.statusCode >= 400) {
-            const exception = new SendEmailException(sendEmailResponse.body, sendEmailResponse.statusCode);
+            const exception = new SendEmailException("Error send email message", sendEmailResponse.statusCode);
             console.log(sendEmailResponse.body);
             throw exception;
         }

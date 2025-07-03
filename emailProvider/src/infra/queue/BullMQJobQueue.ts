@@ -7,17 +7,17 @@ export default class BullMQJobQueue<T> implements IJobQueue<T> {
 
   private readonly queue: Queue;
 
-  constructor(readonly queueName: string, connection: CacheConnectionAbstraction) {
-    this.queue = new Queue(queueName, { connection: connection });
+  constructor(readonly queueName: string, cacheConnection: CacheConnectionAbstraction) {
+    this.queue = new Queue(queueName, { connection: cacheConnection.connection() });
   }
 
-  async addJob(payload: T, options: JobOptions = {}): Promise<string> {
+  async addJob(jobName: string, payload: T, options: JobOptions = {}): Promise<string> {
     const delay =
       options.scheduledAt && options.scheduledAt > new Date()
         ? options.scheduledAt.getTime() - Date.now()
         : 0;
 
-    const job = await this.queue.add(this.queueName, payload, {
+    const job = await this.queue.add(jobName, payload, {
       delay,
       attempts: options.attempts ?? 1,
       backoff: { type: 'exponential', delay: 60_000 }, // 1 min, 2 min, 4 min…
