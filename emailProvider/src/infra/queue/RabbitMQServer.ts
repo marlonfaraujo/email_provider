@@ -22,8 +22,8 @@ export default class RabbitMQServer  implements QueueAbstraction {
                 channel.nack(message, false, false);
                 return;
             }
-            const input = JSON.parse(message.content.toString());
-            await callback(input);
+            const output = message.content.toString();
+            await callback(output);
             //this.channel.ack(message);
         });
     }
