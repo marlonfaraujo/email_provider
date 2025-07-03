@@ -9,7 +9,7 @@ services:
     ports:
       - "3500:3500"
     volumes:
-      - ./emailProvider/:/workspace
+      - ./:/workspace
     environment:
       - SENDGRID_API_KEY=token
       - SENDGRID_FROM_EMAIL=email@email.com
@@ -23,8 +23,15 @@ services:
       dockerfile: ./publisher/Dockerfile
     ports:
       - "3501:3501"
-    volumes:
-      - ./publisher/:/workspace
+    networks:
+      - email-provider-network
+
+  email-provider-redis:
+    image: redis:7.4.1-alpine 
+    container_name: email_provider_redis
+    command: redis-server --requirepass redis
+    ports:
+      - "6379:6379"
     networks:
       - email-provider-network
 
