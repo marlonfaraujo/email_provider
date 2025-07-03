@@ -19,7 +19,7 @@ export default class PublisherFeature {
 				type: "" 
 			};
 			//tranformation in use case
-			await this.queue.publish(queueParams, JSON.stringify(request));
+			await this.queue.publish(queueParams, request);
         });
     }
 }
