@@ -11,10 +11,10 @@ export class EmailSchedule{
     private publishStatus: string;
     private publishDate: Date | null;
 
-    constructor(id: string, name: string, messageParameter: EmailMessageParameter){
+    constructor(id: string, name: string, scheduledDate: Date, messageParameter: EmailMessageParameter){
         this.id = id;
         this.name = name;
-        this.scheduledDate = new Date();
+        this.scheduledDate = scheduledDate;
         this.scheduleStatus = ScheduleStatus.Created;
         this.messageParameter = messageParameter;
         this.publishStatus = MessageStatusEnum.Pending;

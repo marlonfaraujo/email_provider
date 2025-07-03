@@ -13,7 +13,7 @@ export default class CreateEmailSchedule{
     }
 
     async execute(scheduleDto: EmailScheduleDto): Promise<void>{
-        const schedule = new EmailSchedule(this.idGenerator.generate(), scheduleDto.name,
+        const schedule = new EmailSchedule(this.idGenerator.generate(), scheduleDto.name, scheduleDto.scheduledDate,
             EmailMessageParameter.create(scheduleDto.body, scheduleDto.subject, scheduleDto.from, scheduleDto.to, scheduleDto.cc, scheduleDto.cco));
 
         await this.emailScheduleRepository.save(schedule);

@@ -20,7 +20,7 @@ export default class EmailScheduleMongoRepository extends BaseMongoRepository im
     async getById(id: string): Promise<EmailSchedule | null> {
         const schedules = await this.getCollection(this.collectionName);
         const result = await schedules.findOne<any>({ _id: new ObjectId(id) });
-        return new EmailSchedule(result._id, result.name, result.messageParameter);
+        return new EmailSchedule(result._id, result.name, result.scheduledDate, result.messageParameter);
     }
 
     async update(schedule: EmailSchedule, id: string): Promise<void> {
@@ -34,7 +34,7 @@ export default class EmailScheduleMongoRepository extends BaseMongoRepository im
     async get(): Promise<EmailSchedule[]> {
         const schedules = await this.getCollection<EmailSchedule>(this.collectionName);
         const result = await schedules.find<any>({}).toArray();
-        return result.map((x: any) => new EmailSchedule(x._id, x.name, x.messageParameter));
+        return result.map((x: any) => new EmailSchedule(x._id, x.name, x.scheduledDate, x.messageParameter));
     }
 
 }

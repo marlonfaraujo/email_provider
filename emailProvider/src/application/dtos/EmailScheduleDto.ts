@@ -5,5 +5,6 @@ export type EmailScheduleDto = {
     from: string
     to?: string[],
     cc?: string[],
-    cco?: string[]
+    cco?: string[],
+    scheduledDate: Date
 }
