@@ -15,6 +15,7 @@ export default class PublisherController {
 				type: "" 
 			};
 			await queue.publish(queueParams, request);
+            return {};
         });
     }
 }

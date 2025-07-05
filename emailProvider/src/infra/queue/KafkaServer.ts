@@ -19,7 +19,7 @@ export default class KafkaServer implements QueueAbstraction {
     }
 
     async consume(queueParams: QueueParams, callback: Function): Promise<void> {
-        this.consumer = this.kafka!.consumer({ groupId: this.groupId });
+        this.consumer = this.kafka!.consumer({ groupId: this.groupId, allowAutoTopicCreation: true });
         await this.consumer.connect();
         await this.consumer.subscribe({ topic: queueParams.queueName, fromBeginning: false });      
         await this.consumer.run({

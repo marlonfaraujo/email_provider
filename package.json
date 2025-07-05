@@ -1,0 +1,11 @@
+{
+  "name": "email-provider",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "docker:up": "docker compose up -d && docker exec -i email_provider_kafka bash < ./create-topic.sh",
+    "docker:stop": "docker compose stop",
+    "docker:clean": "docker compose rm -fsv"
+  }
+}

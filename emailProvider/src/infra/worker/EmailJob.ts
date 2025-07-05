@@ -2,6 +2,8 @@ import EmailProviderAbstraction from "../../application/abstractions/EmailProvid
 import IdGeneratorAbstraction from "../../application/abstractions/IdGeneratorAbstraction";
 import JobWorkerAbstraction from "../../application/abstractions/JobWorkerAbstraction";
 import { SendEmailDto } from "../../application/dtos/SendEmailDto";
+import { SendEmailResultDto } from "../../application/dtos/SendEmailResultDto";
+import SendEmailException from "../../application/exceptions/SendEmailException";
 import CreateEmailMessage from "../../application/usecases/emailMessage/CreateEmailMessage";
 import EmailMessageRepository from "../../domain/repositories/EmailMessageRepository";
 import MongoDatabase from "../database/MongoDatabase";
@@ -24,16 +26,21 @@ export default class EmailJob {
         const idGenerator: IdGeneratorAbstraction = new MongoObjectIdGenerator();
 		await this.worker.start(async(job: any) => {
             const input : SendEmailDto = {
-                to: job.data?.to![0],
+                to: job.data?.to || [],
+                cc: job.data?.cc || [],
+                bcc: job.data?.cco || [],
                 from: job.data?.from,
                 subject: job.data?.subject,
-                body: job.data?.body,
-                cc: job.data?.cc || [],
-                bcc: job.data?.cco || []
+                body: job.data?.body
             };
-			await emailProvider.sendEmail(input);
-            const createEmailMessage = new CreateEmailMessage(emailRepository, idGenerator);
-            await createEmailMessage.execute(job.data);
+			await emailProvider.sendEmail(input)
+                .then(async (result: SendEmailResultDto) => {
+                    const createEmailMessage = new CreateEmailMessage(emailRepository, idGenerator);
+                    await createEmailMessage.execute(job.data);
+                })
+                .catch((exception: SendEmailException) => {
+                    console.log(exception);
+                });
 		});
     }
 }

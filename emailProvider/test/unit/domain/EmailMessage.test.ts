@@ -1,6 +1,6 @@
-import EmailMessage from "../../../emailProvider/src/domain/entities/EmailMessage"
-import { MessageStatusEnum } from "../../../emailProvider/src/domain/enums/MessageStatus";
-import EmailMessageParameter from "../../../emailProvider/src/domain/valueObjects/EmailMessageParameter"
+import EmailMessage from "../../../src/domain/entities/EmailMessage"
+import { MessageStatusEnum } from "../../../src/domain/enums/MessageStatus";
+import EmailMessageParameter from "../../../src/domain/valueObjects/EmailMessageParameter"
 
 test("Must publish the message and have the status published", () => {
     const message = new EmailMessage("", EmailMessageParameter.create("","","test@email.com"));

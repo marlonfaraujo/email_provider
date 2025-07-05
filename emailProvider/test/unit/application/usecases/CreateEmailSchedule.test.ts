@@ -1,12 +1,18 @@
-import CreateEmailSchedule from "../../../../emailProvider/src/application/usecases/schedule/CreateEmailSchedule";
-import ListEmailSchedule from "../../../../emailProvider/src/application/usecases/schedule/ListEmailSchedule";
-import EmailScheduleMemoryRepository from "../../../../emailProvider/src/infra/repositories/EmailScheduleMemoryRepository";
-import { CryptoUuidGenerator } from "../../../../emailProvider/src/infra/uuid/CryptoUuidGenerator";
+import { EmailMessageDto } from "../../../../src/application/dtos/EmailMessageDto";
+import CreateEmailSchedule from "../../../../src/application/usecases/schedule/CreateEmailSchedule";
+import ListEmailSchedule from "../../../../src/application/usecases/schedule/ListEmailSchedule";
+import EmailScheduleMemoryRepository from "../../../../src/infra/repositories/EmailScheduleMemoryRepository";
+import { CryptoUuidGenerator } from "../../../../src/infra/uuid/CryptoUuidGenerator";
+import BullMQJobQueue from "../../../../src/infra/queue/BullMQJobQueue";
+import RedisConnection  from "../../../../src/infra/database/RedisConnection";
 
 test("Must create schedule record and return non-null id", async() => {
     const repository = new EmailScheduleMemoryRepository();
     const crypto = new CryptoUuidGenerator();
-    const createSchedule = new CreateEmailSchedule(repository, crypto);
+    const mockAdd = jest.fn();
+    const mockQueue = { addJob: mockAdd } as unknown as BullMQJobQueue<EmailMessageDto>;
+    const mockCache = { connection: mockAdd } as unknown as RedisConnection;
+    const createSchedule = new CreateEmailSchedule(repository, crypto, mockQueue);
     const dto : any = {
         name: "name",
         body: "html",

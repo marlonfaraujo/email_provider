@@ -11,7 +11,6 @@ export default class ListEmailMessage {
         const items = await this.repository.get();
         const result: EmailMessageResultDto[] = items.map(item => ({
             id: item.id,
-            status: item.getStatus(),
             subject: item.messageParameter.subject,
             from: item.messageParameter.from.getValue(),
             recipients: [

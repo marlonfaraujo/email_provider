@@ -12,13 +12,14 @@ services:
       - ./:/workspace
     depends_on:
       - email-provider-redis
+      - email-provider-kafka
     environment:
       - REDIS_HOST=email-provider-redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=redis
       - SENDGRID_API_KEY=token
       - SENDGRID_FROM_EMAIL=email@email.com
-      - KAFKA_BROKER=email-provider-kafka:9092
+      - KAFKA_BROKER=email-provider-kafka:29092
     networks:
       - email-provider-network
   
@@ -30,7 +31,7 @@ services:
     ports:
       - "3501:3501"
     environment:
-      - KAFKA_BROKER=email-provider-kafka:9092
+      - KAFKA_BROKER=email-provider-kafka:29092
     networks:
       - email-provider-network
 
@@ -57,13 +58,13 @@ services:
     image: rabbitmq:4.0-management
     container_name: email_provider_rabbitmq
     ports:
-      - "5672:5672"     # Porta do protocolo AMQP
-      - "15672:15672"   # Porta da interface de gerenciamento
+      - "5672:5672"     
+      - "15672:15672"   
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq-data:/var/lib/rabbitmq
     networks:
       - email-provider-network
 
@@ -71,23 +72,31 @@ services:
     image: apache/kafka:3.9.1
     container_name: email_provider_kafka
     ports:
-      - '9092:9092'
+      - "9092:9092"
+      - "29092:29092"
     environment:
       - KAFKA_ENABLE_KRAFT=yes
       - KAFKA_NODE_ID=1
       - KAFKA_PROCESS_ROLES=broker,controller
-      - KAFKA_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://email-provider-kafka:9092
+      - KAFKA_LISTENERS=INTERNAL://:29092,EXTERNAL://:9092,CONTROLLER://:9093
+      - KAFKA_ADVERTISED_LISTENERS=INTERNAL://email-provider-kafka:29092,EXTERNAL://localhost:9092
       - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      - KAFKA_INTER_BROKER_LISTENER_NAME=INTERNAL
       - KAFKA_CONTROLLER_QUORUM_VOTERS=1@email-provider-kafka:9093
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
-      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
-      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
-      - KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0
-      - KAFKA_NUM_PARTITIONS=3
+#      - KAFKA_KRAFT_CLUSTER_ID=175500fb77fc4e46aeea23338d061721 #uuidgen | tr -d '-'
+#      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+#      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+#      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
+#      - KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0
+#      - KAFKA_NUM_PARTITIONS=3
+#      - KAFKA_KRAFT_BROKER_ID=1
+#      - KAFKA_LOG_DIRS=/opt/kafka/logs/kraft-combined-logs
     networks:
       - email-provider-network
+    volumes:
+      - kafka-data:/var/lib/kafka
 
   email-provider-kafka-ui:
     image: provectuslabs/kafka-ui:v0.7.2
@@ -96,7 +105,7 @@ services:
       - "8080:8080"
     environment:
       - KAFKA_CLUSTERS_0_NAME=kraft-cluster-local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=email-provider-kafka:9092
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=email-provider-kafka:29092
     depends_on:
       - email-provider-kafka
     networks:
@@ -104,7 +113,8 @@ services:
 
 volumes:
   mongodb-data:
-  rabbitmq_data:
+  rabbitmq-data:
+  kafka-data:
 
 networks:
   email-provider-network: {}

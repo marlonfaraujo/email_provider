@@ -3,6 +3,7 @@ import EmailMessage from "../../domain/entities/EmailMessage";
 import EmailMessageRepository from "../../domain/repositories/EmailMessageRepository";
 import NoSqlDatabaseConnectionAbstraction from "../database/NoSqlDatabaseConnectionAbstraction";
 import BaseMongoRepository from "./BaseMongoRepository";
+import EmailMessageParameter from "../../domain/valueObjects/EmailMessageParameter";
 
 export default class EmailMessageMongoRepository extends BaseMongoRepository implements EmailMessageRepository {
 
@@ -34,7 +35,13 @@ export default class EmailMessageMongoRepository extends BaseMongoRepository imp
     async get(): Promise<EmailMessage[]> {
         const messages = await this.getCollection<EmailMessage>(this.collectionName);
         const result = await messages.find<any>({}).toArray();
-        return result.map((x: any) => new EmailMessage(x._id, x.messageParameter));
+        return result.map((x: any) => new EmailMessage(x._id, 
+            EmailMessageParameter.create(x.messageParameter.body, 
+                x.messageParameter.subject, 
+                x.messageParameter.from?.value, 
+                x.messageParameter.recipient?.to?.map((x: any) => x.value), 
+                x.messageParameter.recipient?.cc?.map((x: any) => x.value), 
+                x.messageParameter.recipient?.cco?.map((x: any) => x.value))));
     }
 
 }

@@ -8,7 +8,7 @@ export default class MongoDatabase implements NoSqlDatabaseConnectionAbstraction
 
     constructor(){
         this.dbName = "email_provider";
-        this.client = new MongoClient("mongodb://mongodb:27017");
+        this.client = new MongoClient("mongodb://email-provider-mongodb:27017");
     }
 
     async db(): Promise<Db> {

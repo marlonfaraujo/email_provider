@@ -17,10 +17,11 @@ export default class KafkaServer implements QueueAbstraction {
     
     async publish(queueParams: QueueParamsDto, message: any): Promise<void> {
         const producer = this.kafka?.producer();
+        await producer!.connect();
         const input: any = {
             key: queueParams.queueName,
             value: Buffer.from(JSON.stringify(message)),
-            headers: { occurredAt: new Date() }
+            headers: { occurredAt: new Date().toString() }
         };
         await producer!.send({ topic: queueParams.queueName, messages: [input]});
     }

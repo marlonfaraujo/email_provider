@@ -20,18 +20,25 @@ export default class EmailSendGrid implements EmailProviderAbstraction {
     async sendEmail(input: SendEmailDto): Promise<SendEmailResultDto> {
         const msg = {
             to: input.to,
+            cc: input.cc,
+            bcc: input.bcc,
             from: input.from,
             subject: input.subject,
             html: input.body
         };
-        const [sendEmailResponse] = await this.mailService.send(msg);
-        if (sendEmailResponse.statusCode >= 400) {
-            const exception = new SendEmailException("Error send email message", sendEmailResponse.statusCode);
-            console.log(sendEmailResponse.body);
-            throw exception;
+        try {
+            const [sendEmailResponse] = await this.mailService.send(msg);
+            if (sendEmailResponse.statusCode >= 400) {
+                console.log(sendEmailResponse.body);
+                throw new SendEmailException("Error send email message", sendEmailResponse.statusCode);;
+            }
+            const result: SendEmailResultDto = { statusCode: sendEmailResponse.statusCode, body: sendEmailResponse.body };
+            return result;
+        } catch(error: any){
+            console.log(error);
+            const errorMessage = error.response?.body?.errors[0]?.message || "Error send email message";
+            throw new SendEmailException(errorMessage, error.code);
         }
-        const result: SendEmailResultDto = { statusCode: sendEmailResponse.statusCode, body: sendEmailResponse.body };
-        return result;
     }
 
 }

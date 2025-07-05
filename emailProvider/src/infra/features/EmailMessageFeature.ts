@@ -33,7 +33,6 @@ export default class EmailMessageFeature {
 			const messages = await getMessages.execute();
 			const response: EmailMessageResponse[] = messages.map(message => ({
 				id: message.id,
-				status: message.status,
 				subject: message.subject,
 				from: message.from,
 				recipient: message.recipients.join(";")
@@ -45,7 +44,6 @@ export default class EmailMessageFeature {
 
 export type EmailMessageResponse = {
 	id: string,
-	status: string,
 	subject: string,
 	from: string,
 	recipient: string

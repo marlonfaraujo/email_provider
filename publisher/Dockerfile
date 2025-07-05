@@ -2,17 +2,20 @@ FROM node:22
 
 WORKDIR /workspace
 
-COPY package*.json ./
+COPY publisher/package*.json publisher/tsconfig.json ./
 
-RUN npm install
+RUN npm ci
 
-COPY . .
+COPY publisher/ .
+
+RUN npm run build
 
 EXPOSE 3501
 
 # Set `DEVCONTAINER` environment variable to help with orientation
 ENV DEVCONTAINER=true
 
-#ENTRYPOINT ["node", "main.ts"]
+ENTRYPOINT ["node"]
+CMD ["dist/api.js"]
 
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+#ENTRYPOINT ["tail", "-f", "/dev/null"]
