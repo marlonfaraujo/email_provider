@@ -3,5 +3,5 @@ import { EmailProvider, EmailProviderLevel } from "../../../src/domain/entities/
 test("Must change the primary provider to secondary", () => {
     const provider = new EmailProvider("","","","", EmailProviderLevel.Primary);
     provider.setSecondary();
-    expect(provider.getLevel()).toBe(EmailProviderLevel.Secondary);
+    expect(EmailProviderLevel.Secondary).toBe(provider.getLevel());
 })

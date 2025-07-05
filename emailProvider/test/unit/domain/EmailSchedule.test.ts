@@ -6,6 +6,6 @@ test("Must update date and update status", () => {
     const schedule = new EmailSchedule("", "name", now, EmailMessageParameter.create("","","test@email.com", []));
     schedule.name = "Updated name";
     schedule.update();
-    expect(schedule.getScheduleDate()).toBe(now);
-    expect(schedule.getScheduleStatus()).toBe(ScheduleStatus.Updated);
+    expect(now).toBe(schedule.getScheduleDate());
+    expect(ScheduleStatus.Updated).toBe(schedule.getScheduleStatus());
 })
