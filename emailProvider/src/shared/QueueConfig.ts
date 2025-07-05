@@ -1,4 +1,4 @@
-export const RABBIT_CONFIG = {
+export const QUEUE_CONFIG = {
   EXCHANGES: {
     SEND_EMAIL: 'exchange.email.send',
     DLX: 'exchange.dlx'
