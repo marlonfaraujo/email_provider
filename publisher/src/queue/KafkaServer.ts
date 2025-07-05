@@ -19,7 +19,7 @@ export default class KafkaServer implements QueueAbstraction {
         const producer = this.kafka?.producer();
         await producer!.connect();
         const input: any = {
-            key: queueParams.queueName,
+            key: message?.from ?? crypto.randomUUID(),
             value: Buffer.from(JSON.stringify(message)),
             headers: { occurredAt: new Date().toString() }
         };

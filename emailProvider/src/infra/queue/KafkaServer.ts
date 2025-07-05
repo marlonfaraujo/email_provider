@@ -24,7 +24,8 @@ export default class KafkaServer implements QueueAbstraction {
         await this.consumer.subscribe({ topic: queueParams.queueName, fromBeginning: false });      
         await this.consumer.run({
             eachMessage: async ({ topic, partition, message }) => {
-                const output = message.value!.toString();
+                const key = message.key?.toString();
+                const output = message.value?.toString() || "";
                 await callback(output);
             }
         });
