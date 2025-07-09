@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: email-provider-publisher-api
+  name: email-provider-publisher-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: email-provider-publisher-api
+  template:
+    metadata:
+      labels:
+        io.kompose.service: email-provider-publisher-api
+    spec:
+      containers:
+        - env:
+            - name: KAFKA_BROKER
+              value: email-provider-kafka:29092
+          image: email-provider-publisher-api
+          name: email-provider-publisher-api
+          ports:
+            - containerPort: 3501
+              protocol: TCP
+      restartPolicy: Always

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: email-provider-redis
+  name: email-provider-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: email-provider-redis
+  template:
+    metadata:
+      labels:
+        io.kompose.service: email-provider-redis
+    spec:
+      containers:
+        - args:
+            - redis-server
+            - --requirepass
+            - redis
+          image: redis:7.4.1-alpine
+          name: email-provider-redis
+          ports:
+            - containerPort: 6379
+              protocol: TCP
+      restartPolicy: Always
