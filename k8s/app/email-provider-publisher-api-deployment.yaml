@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: email-provider-publisher-api
+  name: email-provider-publisher-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: email-provider-publisher-api
+  template:
+    metadata:
+      labels:
+        app: email-provider-publisher-api
+    spec:
+      containers:
+        - env:
+            - name: KAFKA_BROKER
+              value: email-provider-kafka-0.email-provider-kafka-service.default.svc.cluster.local:29092
+          image: email-provider-publisher-api
+          name: email-provider-publisher-api
+          ports:
+            - containerPort: 3501
+              protocol: TCP
+      restartPolicy: Always

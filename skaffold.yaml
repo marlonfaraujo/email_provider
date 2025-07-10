@@ -1,0 +1,20 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: email-provider
+build:
+  local:
+    push: false
+  artifacts:
+    - image: email-provider-api
+      context: .
+      docker:
+        dockerfile: ./emailProvider/Dockerfile
+    - image: email-provider-publisher-api
+      context: .
+      docker:
+        dockerfile: ./publisher/Dockerfile
+
+manifests:
+  rawYaml:
+    - k8s/app/*.yaml
