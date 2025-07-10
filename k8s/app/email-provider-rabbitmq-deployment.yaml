@@ -2,19 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    io.kompose.service: email-provider-rabbitmq
+    app: email-provider-rabbitmq
   name: email-provider-rabbitmq
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: email-provider-rabbitmq
+      app: email-provider-rabbitmq
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        io.kompose.service: email-provider-rabbitmq
+        app: email-provider-rabbitmq
     spec:
       containers:
         - env:

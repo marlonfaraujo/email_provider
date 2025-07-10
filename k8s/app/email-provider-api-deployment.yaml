@@ -2,24 +2,24 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    io.kompose.service: email-provider-api
+    app: email-provider-api
   name: email-provider-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: email-provider-api
+      app: email-provider-api
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        io.kompose.service: email-provider-api
+        app: email-provider-api
     spec:
       containers:
         - env:
             - name: KAFKA_BROKER
-              value: email-provider-kafka:29092
+              value: email-provider-kafka-0.email-provider-kafka-service.default.svc.cluster.local:29092
             - name: REDIS_HOST
               value: email-provider-redis
             - name: REDIS_PASSWORD

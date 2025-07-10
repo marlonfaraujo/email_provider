@@ -2,22 +2,22 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    io.kompose.service: email-provider-kafka-ui
+    app: email-provider-kafka-ui
   name: email-provider-kafka-ui
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: email-provider-kafka-ui
+      app: email-provider-kafka-ui
   template:
     metadata:
       labels:
-        io.kompose.service: email-provider-kafka-ui
+        app: email-provider-kafka-ui
     spec:
       containers:
         - env:
             - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
-              value: email-provider-kafka:29092
+              value: email-provider-kafka-0.email-provider-kafka-service.default.svc.cluster.local:29092
             - name: KAFKA_CLUSTERS_0_NAME
               value: kraft-cluster-local
           image: provectuslabs/kafka-ui:v0.7.2

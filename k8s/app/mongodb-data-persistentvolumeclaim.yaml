@@ -2,8 +2,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    io.kompose.service: kafka-data
-  name: kafka-data
+    app: mongodb-data
+  name: mongodb-data
 spec:
   accessModes:
     - ReadWriteOnce

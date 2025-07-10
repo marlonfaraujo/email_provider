@@ -1,0 +1,10 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: kafka
+
+manifests:
+  rawYaml:
+    - k8s/kafka/email-provider-kafka-deployment.yaml
+    - k8s/kafka/email-provider-kafka-service.yaml
+    - k8s/kafka/kafka-data-persistentvolumeclaim.yaml
