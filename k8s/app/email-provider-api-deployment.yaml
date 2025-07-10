@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: email-provider-api
+  name: email-provider-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: email-provider-api
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: email-provider-api
+    spec:
+      containers:
+        - env:
+            - name: KAFKA_BROKER
+              value: email-provider-kafka-0.email-provider-kafka-service.default.svc.cluster.local:29092
+            - name: REDIS_HOST
+              value: email-provider-redis
+            - name: REDIS_PASSWORD
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: SENDGRID_API_KEY
+              value: token
+            - name: SENDGRID_FROM_EMAIL
+              value: email@email.com
+          image: email-provider-api
+          name: email-provider-api
+          ports:
+            - containerPort: 3500
+              protocol: TCP
+      restartPolicy: Always

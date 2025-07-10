@@ -15,5 +15,5 @@ EXPOSE 3500
 # Set `DEVCONTAINER` environment variable to help with orientation
 ENV DEVCONTAINER=true
 
-#ENTRYPOINT ["node", "dist/main.js"]
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+ENTRYPOINT ["node", "dist/main.js"]
+#ENTRYPOINT ["tail", "-f", "/dev/null"]
