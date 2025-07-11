@@ -5,6 +5,8 @@ metadata:
 build:
   local:
     push: false
+  tagPolicy:
+    sha256: {}
   artifacts:
     - image: email-provider-api
       context: .
@@ -13,8 +15,20 @@ build:
     - image: email-provider-publisher-api
       context: .
       docker:
-        dockerfile: ./publisher/Dockerfile
+        dockerfile: ./publisher/dockerfile
 
 manifests:
   rawYaml:
     - k8s/app/*.yaml
+    - k8s/test/*.yaml
+
+profiles:
+  - name: tests
+    test:
+      - image: email-provider-api
+        custom:
+          - command: "kubectl wait --for=condition=complete --timeout=300s job/run-tests"
+            timeoutSeconds: 30
+          - command: "kubectl logs job/run-tests"    
+            timeoutSeconds: 10
+

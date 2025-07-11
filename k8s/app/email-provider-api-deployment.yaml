@@ -21,7 +21,7 @@ spec:
             - name: KAFKA_BROKER
               value: email-provider-kafka-0.email-provider-kafka-service.default.svc.cluster.local:29092
             - name: REDIS_HOST
-              value: email-provider-redis
+              value: email-provider-redis-service
             - name: REDIS_PASSWORD
               value: redis
             - name: REDIS_PORT
@@ -30,6 +30,8 @@ spec:
               value: token
             - name: SENDGRID_FROM_EMAIL
               value: email@email.com
+            - name: MONGODB_URI_CONNECTION
+              value: "mongodb://email-provider-mongodb-service:27017"
           image: email-provider-api
           name: email-provider-api
           ports:
