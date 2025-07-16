@@ -20,6 +20,7 @@ build:
 manifests:
   rawYaml:
     - k8s/app/*.yaml
+    - k8s/observability/**/*.yaml
     - k8s/test/*.yaml
 
 profiles:

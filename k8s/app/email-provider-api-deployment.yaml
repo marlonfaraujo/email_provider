@@ -17,24 +17,25 @@ spec:
         app: email-provider-api
     spec:
       containers:
-        - env:
+        - name: email-provider-api
+          image: email-provider-api
+          ports:
+            - containerPort: 3500
+              protocol: TCP
+          env:
             - name: KAFKA_BROKER
               value: email-provider-kafka-0.email-provider-kafka-service.default.svc.cluster.local:29092
             - name: REDIS_HOST
               value: email-provider-redis-service
-            - name: REDIS_PASSWORD
-              value: redis
             - name: REDIS_PORT
               value: "6379"
-            - name: SENDGRID_API_KEY
-              value: token
             - name: SENDGRID_FROM_EMAIL
               value: email@email.com
             - name: MONGODB_URI_CONNECTION
               value: "mongodb://email-provider-mongodb-service:27017"
-          image: email-provider-api
-          name: email-provider-api
-          ports:
-            - containerPort: 3500
-              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: email-provider-env
+            - secretRef:
+                name: email-provider-secrets
       restartPolicy: Always

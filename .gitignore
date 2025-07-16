@@ -33,6 +33,7 @@ Thumbs.db
 k8s/tmp/
 k8s/secrets/
 k8s/.generated/
+k8s/**/*env*.yaml
 
 # Coverage & reports
 coverage/
