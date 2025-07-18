@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-provider-kafka-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: email-provider-kafka-exporter
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: email-provider-kafka-exporter
+    spec:
+      containers:
+        - env:
+            - name: KAFKA_BROKER
+              value: email-provider-kafka-service:29092
+          image: email-provider-kafka-exporter
+          name: email-provider-kafka-exporter
+          ports:
+            - containerPort: 3502
+              protocol: TCP
+      restartPolicy: Always

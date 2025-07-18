@@ -20,6 +20,7 @@ services:
       - SENDGRID_API_KEY=token
       - SENDGRID_FROM_EMAIL=email@email.com
       - KAFKA_BROKER=email-provider-kafka:29092
+      - MONGODB_URI_CONNECTION=mongodb://email-provider-mongodb:27017
     networks:
       - email-provider-network
   
@@ -30,8 +31,50 @@ services:
       dockerfile: ./publisher/Dockerfile
     ports:
       - "3501:3501"
+      - "9464:9464"
     environment:
       - KAFKA_BROKER=email-provider-kafka:29092
+      - PROMETHEUS_PORT_EXPORTER=9464
+    networks:
+      - email-provider-network
+  
+  email-provider-kafka-exporter:
+    container_name: email_provider_kafka_exporter
+    build:
+      context: .
+      dockerfile: ./kafkaExporter/Dockerfile
+    depends_on:
+      - email-provider-kafka
+    ports:
+      - "3502:3502"
+    volumes:
+      - ./kafkaExporter:/workspace
+    environment:
+      - KAFKA_BROKER=email-provider-kafka:29092
+    networks:
+      - email-provider-network
+
+  email-provider-mongodb-exporter:
+    image: percona/mongodb_exporter:0.44.0
+    container_name: email_provider_mongodb_exporter
+    depends_on:
+      - email-provider-mongodb
+    ports:
+      - "9216:9216"
+    environment:
+      - MONGODB_URI=mongodb://email-provider-mongodb:27017
+    networks:
+      - email-provider-network
+
+  email-provider-prometheus:
+    image: prom/prometheus:v3.5.0
+    container_name: email_provider_prometheus
+    volumes:
+      - ./prometheus:/etc/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
     networks:
       - email-provider-network
 

@@ -16,6 +16,10 @@ build:
       context: .
       docker:
         dockerfile: ./publisher/Dockerfile
+    - image: email-provider-kafka-exporter
+      context: .
+      docker:
+        dockerfile: ./kafkaExporter/Dockerfile
 
 manifests:
   rawYaml:

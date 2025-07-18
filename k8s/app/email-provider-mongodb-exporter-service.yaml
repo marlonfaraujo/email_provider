@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: email-provider-mongodb-exporter-service
+spec:
+  ports:
+    - name: "9216"
+      port: 9216
+      targetPort: 9216
+  selector:
+    app: email-provider-mongodb-exporter

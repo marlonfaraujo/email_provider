@@ -32,3 +32,9 @@ data:
       - job_name: 'email-provider-publisher-api'
         static_configs:
         - targets: ['email-provider-publisher-api-service:9464']
+      - job_name: 'mongodb-exporter'
+        static_configs:
+          - targets: ['email-provider-mongodb-exporter-service:9216']
+      - job_name: 'kafka-exporter'
+        static_configs:
+          - targets: ['email-provider-kafka-exporter-service:3502']

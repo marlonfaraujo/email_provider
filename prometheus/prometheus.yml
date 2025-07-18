@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  
+  - job_name: 'mongodb-exporter'
+    static_configs:
+      - targets: ['email-provider-mongodb-exporter:9216']
+
+  - job_name: 'kafka-exporter'
+    static_configs:
+      - targets: ['email-provider-kafka-exporter:3502']
+
+  - job_name: 'publisher-api'
+    static_configs:
+    - targets: ['email-provider-publisher-api:9464']
+
+  - job_name: 'email-provider-api'
+    static_configs:
+    - targets: ['email-provider-api:3500']
