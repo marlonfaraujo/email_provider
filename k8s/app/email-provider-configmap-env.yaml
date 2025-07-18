@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: email-provider-env
+data:
+  KAFKA_BROKER: email-provider-kafka-0.email-provider-kafka-service.default.svc.cluster.local:29092
+  REDIS_HOST: email-provider-redis-service
+  REDIS_PASSWORD: password
+  REDIS_PORT: "6379"
+  SENDGRID_API_KEY: token
+  SENDGRID_FROM_EMAIL: "email@email.com"
+  MONGODB_URI_CONNECTION: "mongodb://email-provider-mongodb-service:27017"

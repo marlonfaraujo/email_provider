@@ -10,6 +10,7 @@ COPY publisher/ .
 
 RUN npm run build
 
+EXPOSE 9464
 EXPOSE 3501
 
 # Set `DEVCONTAINER` environment variable to help with orientation

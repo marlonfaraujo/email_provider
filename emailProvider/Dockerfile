@@ -1,6 +1,6 @@
 FROM node:22
 
-WORKDIR /workspace
+WORKDIR /app
 
 COPY emailProvider/package*.json emailProvider/tsconfig*.json ./
 
@@ -15,5 +15,7 @@ EXPOSE 3500
 # Set `DEVCONTAINER` environment variable to help with orientation
 ENV DEVCONTAINER=true
 
-ENTRYPOINT ["node", "dist/main.js"]
+WORKDIR /workspace
+
+ENTRYPOINT ["node", "/app/dist/main.js"]
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
