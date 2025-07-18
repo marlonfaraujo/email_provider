@@ -14,10 +14,18 @@ spec:
       labels:
         app: email-provider-publisher-api
     spec:
+      initContainers:
+        - name: wait-tempo-service
+          image: curlimages/curl:8.15.0
+          args: ["--retry", "10", "--retry-connrefused", "--retry-delay", "3", "--fail", "--silent", "http://tempo-service:3200/ready"]
       containers:
         - env:
             - name: KAFKA_BROKER
               value: email-provider-kafka-0.email-provider-kafka-service.default.svc.cluster.local:29092
+            - name: PROMETHEUS_PORT_EXPORTER
+              value: "9464"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: tempo-service:4318
           image: email-provider-publisher-api
           name: email-provider-publisher-api
           ports:

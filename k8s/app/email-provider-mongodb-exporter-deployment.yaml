@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-provider-mongodb-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: email-provider-mongodb-exporter
+  template:
+    metadata:
+      labels:
+        app: email-provider-mongodb-exporter
+    spec:
+      containers:
+        - env:
+            - name: MONGODB_URI
+              value: "mongodb://email-provider-mongodb-service:27017"
+          image: percona/mongodb_exporter:0.44.0
+          name: email-provider-mongodb-exporter
+          ports:
+            - containerPort: 9216
+              protocol: TCP
+      restartPolicy: Always

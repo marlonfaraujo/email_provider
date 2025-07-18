@@ -16,6 +16,8 @@ import EmailProviderMongoRepository from "../repositories/EmailProviderMongoRepo
 import EmailScheduleMongoRepository from "../repositories/EmailScheduleMongoRepository";
 import MongoObjectIdGenerator from "../uuid/MongoObjectIdGenerator";
 import HttpServer from "./HttpServer";
+import MetricsFeature from "../features/MetricsFeature";
+import MetricsServiceAbstraction from "../../application/abstractions/MetricsServiceAbstraction";
 
 export default class Router {
 
@@ -23,7 +25,9 @@ export default class Router {
     private readonly connection: NoSqlDatabaseConnectionAbstraction;
     private readonly emailProvider: EmailProviderAbstraction;
 
-    constructor(readonly httpServer: HttpServer, readonly cacheConnection: CacheConnectionAbstraction){
+    constructor(readonly httpServer: HttpServer, 
+        readonly cacheConnection: CacheConnectionAbstraction,
+        readonly metricsService: MetricsServiceAbstraction){
         this.uuid = new MongoObjectIdGenerator();
         this.connection = new MongoDatabase();
         this.emailProvider = new EmailSendGrid();
@@ -33,26 +37,32 @@ export default class Router {
         this.initEmailMessageFeature();
         this.initEmailScheduleFeature();
         this.initEmailProviderFeature();
+        this.initMetricsFeature();
     }
 
-    private async initEmailMessageFeature(): Promise<void>{
+    private async initEmailMessageFeature(): Promise<void> {
         //const repository = new EmailMessageMemoryRepository();
         const repository = new EmailMessageMongoRepository(this.connection);
         const feature = new EmailMessageFeature(this.httpServer, repository, this.uuid, this.emailProvider, this.cacheConnection);
         feature.config();
     }
 
-    private initEmailScheduleFeature(): void{
+    private initEmailScheduleFeature(): void {
         //const repository = new EmailScheduleMemoryRepository();
         const repository = new EmailScheduleMongoRepository(this.connection);
         const feature = new EmailScheduleFeature(this.httpServer, repository, this.uuid, this.cacheConnection);
         feature.config();
     }
 
-    private initEmailProviderFeature(): void{
+    private initEmailProviderFeature(): void {
         //const repository = new EmailProviderMemoryRepository();
         const repository = new EmailProviderMongoRepository(this.connection);
         const feature = new EmailProviderFeature(this.httpServer, repository, this.uuid);
+        feature.config();
+    }
+
+    private initMetricsFeature(): void {
+        const feature = new MetricsFeature(this.httpServer, this.metricsService);
         feature.config();
     }
 }

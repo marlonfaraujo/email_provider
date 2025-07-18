@@ -1,0 +1,78 @@
+{
+  "id": null,
+  "uid": "otel-nodejs",
+  "title": "Email Provider API",
+  "tags": ["opentelemetry", "nodejs", "prometheus"],
+  "timezone": "browser",
+  "schemaVersion": 37,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Total HTTP Requests",
+      "targets": [
+        {
+          "expr": "sum by (service_name) (http_server_request_duration_count)",
+          "legendFormat": "{{service_name}}"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 }
+    },
+    {
+      "type": "stat",
+      "title": "HTTP Errors (status >= 500)",
+      "targets": [
+        {
+          "expr": "sum by (service_name) (increase(http_server_request_duration_count{http_status_code=~\"5..\"}[5m]))",
+          "legendFormat": "{{service_name}}"
+        }
+      ],
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 }
+    },
+    {
+      "type": "graph",
+      "title": "HTTP Request Rate",
+      "targets": [
+        {
+          "expr": "rate(http_server_request_duration_count[1m])",
+          "legendFormat": "{{service_name}} {{http_method}}"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 6 }
+    },
+    {
+      "type": "heatmap",
+      "title": "HTTP Response Time (Histogram)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_request_duration_bucket[1m])) by (le))",
+          "format": "heatmap"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 10, "w": 12, "h": 10 },
+      "xAxis": {
+        "show": true,
+        "mode": "time"
+      },
+      "yAxis": {
+        "show": true,
+        "format": "s"
+      },
+      "color": {
+        "mode": "spectrum"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Request Breakdown by Status Code",
+      "targets": [
+        {
+          "expr": "sum by (http_status_code) (rate(http_server_request_duration_count[1m]))",
+          "legendFormat": "Status {{http_status_code}}"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 20, "w": 12, "h": 6 }
+    }
+  ]
+}

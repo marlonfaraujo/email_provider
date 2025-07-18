@@ -1,0 +1,38 @@
+{
+  "title": "Email Provider API",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "HTTP Requests per second",
+      "targets": [
+        {
+          "expr": "rate(http_requests_total[1m])",
+          "legendFormat": "{{method}} {{route}} {{status_code}}"
+        }
+      ]
+    },
+    {
+      "type": "heatmap",
+      "title": "Response time (histogram)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_response_time_seconds_bucket[1m])) by (le))",
+          "legendFormat": "p95 - {{method}} {{route}}"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Total HTTP Requests",
+      "targets": [
+        {
+          "expr": "sum(http_requests_total)"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 30,
+  "version": 1,
+  "refresh": "10s"
+}
