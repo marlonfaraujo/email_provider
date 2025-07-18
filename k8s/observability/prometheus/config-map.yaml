@@ -29,3 +29,6 @@ data:
       - job_name: 'email-provider-api'
         static_configs:
         - targets: ['email-provider-api-service:3500']
+      - job_name: 'email-provider-publisher-api'
+        static_configs:
+        - targets: ['email-provider-publisher-api-service:9464']

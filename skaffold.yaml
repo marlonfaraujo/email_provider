@@ -15,7 +15,7 @@ build:
     - image: email-provider-publisher-api
       context: .
       docker:
-        dockerfile: ./publisher/dockerfile
+        dockerfile: ./publisher/Dockerfile
 
 manifests:
   rawYaml:

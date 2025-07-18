@@ -13,3 +13,11 @@ data:
         access: proxy
         url: http://prometheus-service:9090
         isDefault: true
+      - name: Tempo
+        type: tempo
+        access: proxy
+        url: http://tempo-service:3200
+        jsonData:
+          httpMethod: GET
+          serviceMap:
+            enabled: true
