@@ -19,6 +19,13 @@ spec:
           ports:
             - containerPort: 3200
             - containerPort: 4318
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3200
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
           volumeMounts:
             - name: tempo-config-volume
               mountPath: /etc/tempo.yaml

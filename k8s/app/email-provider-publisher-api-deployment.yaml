@@ -14,6 +14,10 @@ spec:
       labels:
         app: email-provider-publisher-api
     spec:
+      initContainers:
+        - name: wait-for-tempo
+          image: curlimages/curl:8.15.0
+          args: ["--retry", "10", "--retry-connrefused", "--retry-delay", "3", "--fail", "--silent", "http://tempo-service:3200/ready"]
       containers:
         - env:
             - name: KAFKA_BROKER
