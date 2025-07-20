@@ -1,4 +1,4 @@
-name: Build e Deploy com Skaffold e GHCR
+name: Deploy with Skaffold
 
 on:
   push:
@@ -22,11 +22,6 @@ jobs:
       - name: Login GHCR
         run: |
           echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
-
-      - name: ls
-        working-directory: ${{ github.workspace }}
-        run: |
-          ls -la
 
       - name: Build and Push Images
         working-directory: ${{ github.workspace }}
@@ -58,11 +53,11 @@ jobs:
           k3d cluster create cluster-app --agents 2 --k3s-arg "--disable=traefik@server:*" --port "8080:80@loadbalancer" --port "8443:443@loadbalancer" --wait
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.6/deploy/static/provider/cloud/deploy.yaml
 
-      - name: Deploy kafka
+      - name: Deploy Kafka
         run: |
           skaffold run -f ./k8s/kafka/skaffold.yaml
 
-      - name: Deploy com Skaffold
+      - name: Deploy with Skaffold
         run: |
           skaffold run \
             --default-repo=ghcr.io/${{ github.repository_owner }} \
