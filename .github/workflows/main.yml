@@ -89,3 +89,19 @@ jobs:
           done
           echo "Failed ❌"
           exit 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Tests with Jest
+        working-directory: ${{ github.workspace }}/http-test
+        env:
+          BASE_URL: http://app-email-provider:8080
+        run: |
+          ls -la
+          npx jest
