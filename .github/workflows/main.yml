@@ -25,12 +25,12 @@ jobs:
 
       - name: Build e Push das Imagens
         run: |
-          docker build -t $REPO/email-provider:$TAG ./emailProvider
-          docker build -t $REPO/broker-publisher:$TAG ./publisher
-          docker build -t $REPO/kafka-exporter:$TAG ./kafkaExporter
-          docker push $REPO/email-provider:$TAG
-          docker push $REPO/broker-publisher:$TAG
-          docker push $REPO/kafka-exporter:$TAG
+          docker build -t $REPO/email-provider-api:$TAG ./emailProvider
+          docker build -t $REPO/email-provider-publisher-api:$TAG ./publisher
+          docker build -t $REPO/email-provider-kafka-exporter:$TAG ./kafkaExporter
+          docker push $REPO/email-provider-api:$TAG
+          docker push $REPO/email-provider-publisher-api:$TAG
+          docker push $REPO/email-provider-kafka-exporter:$TAG
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v3
