@@ -21,9 +21,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Login GHCR
-        run: |
-          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
 
       - name: Build and Push Images
         working-directory: ${{ github.workspace }}
@@ -63,10 +66,6 @@ jobs:
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
           chmod +x skaffold
           sudo mv skaffold /usr/local/bin/
-      - uses: actions/upload-artifact@v4
-        with:
-          name: skaffold-bin
-          path: /usr/local/bin/
 
       - name: Cluster create with k3d
         run: |
@@ -89,7 +88,8 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           skaffold run \
-            --default-repo=$REPO
+            --default-repo=$REPO \
+            --tag=$TAG
 
       - name: Host configuration
         run: |
@@ -97,7 +97,7 @@ jobs:
       
       - name: Health API
         run: |
-          echo "Trying..."
+          echo "Sending http request..."
           for i in {1..10}; do
             status=$(curl -s -o /dev/null -w "%{http_code}" http://app-email-provider:8080/api/metrics)
             echo "Status code: $status"

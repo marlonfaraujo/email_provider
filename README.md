@@ -1,4 +1,4 @@
-[![NodeJS Build and Deploy](https://github.com/marlonfaraujo/email_provider/actions/workflows/main.yml/badge.svg)](https://github.com/marlonfaraujo/email_provider/actions/workflows/main.yml)
+[![Deploy with Skaffold](https://github.com/marlonfaraujo/email_provider/actions/workflows/main.yml/badge.svg)](https://github.com/marlonfaraujo/email_provider/actions/workflows/main.yml)
 
 This is a repository for testing with devcontainer and skaffold.
 
