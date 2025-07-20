@@ -12,13 +12,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install (k3d, kubectl, skaffold)
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Install k3d
         run: |
           curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
-          curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+
+      - name: Install Skaffold
+        run: |
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-          chmod +x skaffold && sudo mv skaffold /usr/local/bin/
+          chmod +x skaffold
+          sudo mv skaffold /usr/local/bin/
 
       - name: Login GHCR
         run: |
