@@ -31,9 +31,9 @@ jobs:
       - name: Build and Push Images
         working-directory: ${{ github.workspace }}
         run: |
-          docker build -t $REPO/email-provider-api:$TAG ./emailProvider
-          docker build -t $REPO/email-provider-publisher-api:$TAG ./publisher
-          docker build -t $REPO/email-provider-kafka-exporter:$TAG ./kafkaExporter
+          docker build -f ./emailProvider/Dockerfile -t $REPO/email-provider-api:$TAG .
+          docker build -f ./publisher/Dockerfile -t $REPO/email-provider-publisher-api:$TAG .
+          docker build -f ./kafkaExporter/Dockerfile -t $REPO/email-provider-kafka-exporter:$TAG .
           docker push $REPO/email-provider-api:$TAG
           docker push $REPO/email-provider-publisher-api:$TAG
           docker push $REPO/email-provider-kafka-exporter:$TAG
