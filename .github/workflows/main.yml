@@ -80,16 +80,18 @@ jobs:
             --from-literal=SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Deploy Kafka
+      - name: Deploy Kafka with Skaffold
+        working-directory: ${{ github.workspace }}
         run: |
           skaffold run -f ./k8s/kafka/skaffold.yaml
 
-      - name: Deploy with Skaffold
+      - name: Deploy API with Skaffold
+        working-directory: ${{ github.workspace }}
         run: |
           skaffold run \
             --default-repo=$REPO
   
-  tests:
+  health:
     needs: deploy
     runs-on: ubuntu-latest
     permissions:
@@ -97,9 +99,9 @@ jobs:
       packages: write
 
     steps:          
-      - name: Test endpoint
+      - name: Check endpoint
         run: |
-          echo "Testing..."
+          echo "Trying..."
           for i in {1..10}; do
             status=$(curl -s -o /dev/null -w "%{http_code}" http://app-email-provider:8080/api/metrics)
             echo "Status code: $status"
@@ -118,6 +120,7 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
+        working-directory: ${{ github.workspace }}/http-test
         run: npm ci
 
       - name: Tests with Jest
