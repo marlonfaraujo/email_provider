@@ -23,7 +23,12 @@ jobs:
         run: |
           echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
 
-      - name: Build e Push das Imagens
+      - name: Check environments
+        run: |
+          echo "IMAGE=$IMAGE"
+          echo "TAG=$TAG"
+
+      - name: Build and Push Images
         run: |
           docker build -t $REPO/email-provider-api:$TAG ./emailProvider
           docker build -t $REPO/email-provider-publisher-api:$TAG ./publisher
