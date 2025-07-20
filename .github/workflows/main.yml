@@ -1,0 +1,38 @@
+name: Build e Deploy com Skaffold e GHCR
+
+on:
+  push:
+    branches: [release/v2.0.0]
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install (k3d, kubectl, skaffold)
+        run: |
+          curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+          curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+          chmod +x skaffold && sudo mv skaffold /usr/local/bin/
+
+      - name: Login GHCR
+        run: |
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
+
+      - name: Cluster create with k3d
+        run: |
+          k3d cluster create cluster-app --agents 2 --k3s-arg "--disable=traefik@server:*" --port "8080:80@loadbalancer" --port "8443:443@loadbalancer" --wait
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.6/deploy/static/provider/cloud/deploy.yaml
+
+      - name: Deploy kafka
+        run: |
+          skaffold run -f ./k8s/kafka/skaffold.yaml
+
+      - name: Deploy com Skaffold (push para GHCR incluso)
+        run: |
+          skaffold run
