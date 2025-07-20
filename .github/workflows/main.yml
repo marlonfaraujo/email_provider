@@ -23,6 +23,11 @@ jobs:
         run: |
           echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
 
+      - name: ls
+        working-directory: ${{ github.workspace }}
+        run: |
+          ls -la
+
       - name: Build and Push Images
         working-directory: ${{ github.workspace }}
         run: |
