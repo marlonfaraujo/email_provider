@@ -2,7 +2,8 @@ name: Deploy with Skaffold
 
 on:
   push:
-    branches: [release/v2.0.0]
+    branches: [main]
+  workflow_dispatch:
 
 env:
   REPO: ghcr.io/${{ github.repository_owner }}
