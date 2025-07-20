@@ -63,10 +63,6 @@ jobs:
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
           chmod +x skaffold
           sudo mv skaffold /usr/local/bin/
-      - uses: actions/upload-artifact@v4
-        with:
-          name: skaffold-bin
-          path: /usr/local/bin/
 
       - name: Cluster create with k3d
         run: |
