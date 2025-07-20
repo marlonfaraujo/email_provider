@@ -1,0 +1,127 @@
+name: Deploy with Skaffold
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REPO: ghcr.io/${{ github.repository_owner }}
+  TAG: ${{ github.sha }}
+
+jobs:
+
+  build-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login GHCR
+        run: |
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
+
+      - name: Build and Push Images
+        working-directory: ${{ github.workspace }}
+        run: |
+          docker build -f ./emailProvider/Dockerfile -t $REPO/email-provider-api:$TAG .
+          docker build -f ./publisher/Dockerfile -t $REPO/email-provider-publisher-api:$TAG .
+          docker build -f ./kafkaExporter/Dockerfile -t $REPO/email-provider-kafka-exporter:$TAG .
+          docker push $REPO/email-provider-api:$TAG
+          docker push $REPO/email-provider-publisher-api:$TAG
+          docker push $REPO/email-provider-kafka-exporter:$TAG
+  
+  deploy:
+    needs:
+      - build-push 
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:  
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Install k3d
+        run: |
+          wget -q -O k3d https://github.com/k3d-io/k3d/releases/latest/download/k3d-linux-amd64
+          chmod +x k3d
+          sudo mv k3d /usr/local/bin/
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Install Skaffold
+        run: |
+          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+          chmod +x skaffold
+          sudo mv skaffold /usr/local/bin/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: skaffold-bin
+          path: /usr/local/bin/
+
+      - name: Cluster create with k3d
+        run: |
+          k3d cluster create cluster-app --agents 2 --k3s-arg "--disable=traefik@server:*" --port "8080:80@loadbalancer" --port "8443:443@loadbalancer" --wait
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.6/deploy/static/provider/cloud/deploy.yaml
+
+      - name: Create Kubernetes Secret
+        run: |
+          kubectl create secret generic email-provider-secrets \
+            --from-literal=REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} \
+            --from-literal=SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy Kafka with Skaffold
+        working-directory: ${{ github.workspace }}
+        run: |
+          skaffold run -f ./k8s/kafka/skaffold.yaml
+
+      - name: Deploy API with Skaffold
+        working-directory: ${{ github.workspace }}
+        run: |
+          skaffold run \
+            --default-repo=$REPO
+
+      - name: Host configuration
+        run: |
+          echo "127.0.0.1 app-email-provider" | sudo tee -a /etc/hosts
+      
+      - name: Health API
+        run: |
+          echo "Trying..."
+          for i in {1..10}; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://app-email-provider:8080/api/metrics)
+            echo "Status code: $status"
+            if [ "$status" = "200" ]; then
+              echo "Ok! ✅"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Failed ❌"
+          exit 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        working-directory: ${{ github.workspace }}/http-test
+        run: npm ci
+
+      - name: Tests with Jest
+        working-directory: ${{ github.workspace }}/http-test
+        env:
+          BASE_URL: http://app-email-provider:8080
+        run: |
+          npx jest
