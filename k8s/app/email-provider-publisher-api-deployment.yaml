@@ -17,7 +17,7 @@ spec:
       initContainers:
         - name: wait-tempo-service
           image: curlimages/curl:8.15.0
-          args: ["--retry", "10", "--retry-connrefused", "--retry-delay", "3", "--fail", "--silent", "http://tempo-service:3200/ready"]
+          args: ["--retry", "25", "--retry-connrefused", "--retry-delay", "5", "--fail", "http://tempo-service:3200/ready"]
       containers:
         - env:
             - name: KAFKA_BROKER
