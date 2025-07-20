@@ -79,7 +79,7 @@ jobs:
         run: |
           echo "Testing..."
           for i in {1..10}; do
-            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/api/metrics)
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://app-email-provider:8080/api/metrics)
             echo "Status code: $status"
             if [ "$status" = "200" ]; then
               echo "Ok! ✅"
