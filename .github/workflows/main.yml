@@ -7,10 +7,30 @@ on:
 jobs:
   build-push-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    env:
+      IMAGE: ghcr.io/${{ github.repository_owner }}
+      TAG: ${{ github.sha }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Login GHCR
+        run: |
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
+
+      - name: Build e Push das Imagens
+        run: |
+          docker build -t $REPO/email-provider:$TAG ./emailProvider
+          docker build -t $REPO/broker-publisher:$TAG ./publisher
+          docker build -t $REPO/kafka-exporter:$TAG ./kafkaExporter
+          docker push $REPO/email-provider:$TAG
+          docker push $REPO/broker-publisher:$TAG
+          docker push $REPO/kafka-exporter:$TAG
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v3
@@ -27,10 +47,6 @@ jobs:
           chmod +x skaffold
           sudo mv skaffold /usr/local/bin/
 
-      - name: Login GHCR
-        run: |
-          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
-
       - name: Cluster create with k3d
         run: |
           k3d cluster create cluster-app --agents 2 --k3s-arg "--disable=traefik@server:*" --port "8080:80@loadbalancer" --port "8443:443@loadbalancer" --wait
@@ -40,6 +56,8 @@ jobs:
         run: |
           skaffold run -f ./k8s/kafka/skaffold.yaml
 
-      - name: Deploy com Skaffold (push para GHCR incluso)
+      - name: Deploy com Skaffold
         run: |
-          skaffold run
+          skaffold run \
+            --default-repo=ghcr.io/${{ github.repository_owner }} \
+            --digest-source-tag=$TAG
