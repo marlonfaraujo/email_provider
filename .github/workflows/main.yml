@@ -54,6 +54,17 @@ jobs:
         run: |
           k3d cluster create cluster-app --agents 2 --k3s-arg "--disable=traefik@server:*" --port "8080:80@loadbalancer" --port "8443:443@loadbalancer" --wait
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.6/deploy/static/provider/cloud/deploy.yaml
+      
+      - name: Create Kubernetes Secret
+        run: |
+          kubectl create secret generic email-provider-secrets \
+            --from-literal=REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} \
+            --from-literal=SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Host configuration
+        run: |
+          echo "127.0.0.1 app-email-provider" | sudo tee -a /etc/hosts
 
       - name: Deploy Kafka
         run: |
@@ -63,3 +74,18 @@ jobs:
         run: |
           skaffold run \
             --default-repo=$REPO
+            
+      - name: Test endpoint
+        run: |
+          echo "Testing..."
+          for i in {1..10}; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/api/metrics)
+            echo "Status code: $status"
+            if [ "$status" = "200" ]; then
+              echo "Ok! ✅"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Failed ❌"
+          exit 1
