@@ -4,16 +4,17 @@ on:
   push:
     branches: [release/v2.0.0]
 
+env:
+  REPO: ghcr.io/${{ github.repository_owner }}
+  TAG: ${{ github.sha }}
+
 jobs:
-  build-push-deploy:
+
+  build-push:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-
-    env:
-      REPO: ghcr.io/${{ github.repository_owner }}
-      TAG: ${{ github.sha }}
 
     steps:
       - name: Checkout
@@ -32,7 +33,14 @@ jobs:
           docker push $REPO/email-provider-api:$TAG
           docker push $REPO/email-provider-publisher-api:$TAG
           docker push $REPO/email-provider-kafka-exporter:$TAG
-      
+  
+  environment-configuration:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
       - name: Install k3d
         run: |
           wget -q -O k3d https://github.com/k3d-io/k3d/releases/latest/download/k3d-linux-amd64
@@ -54,17 +62,27 @@ jobs:
         run: |
           k3d cluster create cluster-app --agents 2 --k3s-arg "--disable=traefik@server:*" --port "8080:80@loadbalancer" --port "8443:443@loadbalancer" --wait
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.6/deploy/static/provider/cloud/deploy.yaml
-      
+
+      - name: Host configuration
+        run: |
+          echo "127.0.0.1 app-email-provider" | sudo tee -a /etc/hosts
+
+  deploy:
+    needs:
+      - build-push 
+      - environment-configuration
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:      
       - name: Create Kubernetes Secret
         run: |
           kubectl create secret generic email-provider-secrets \
             --from-literal=REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} \
             --from-literal=SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }} \
             --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Host configuration
-        run: |
-          echo "127.0.0.1 app-email-provider" | sudo tee -a /etc/hosts
 
       - name: Deploy Kafka
         run: |
@@ -74,7 +92,15 @@ jobs:
         run: |
           skaffold run \
             --default-repo=$REPO
-            
+  
+  tests:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:          
       - name: Test endpoint
         run: |
           echo "Testing..."
@@ -103,5 +129,4 @@ jobs:
         env:
           BASE_URL: http://app-email-provider:8080
         run: |
-          ls -la
           npx jest
