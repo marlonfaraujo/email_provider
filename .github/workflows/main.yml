@@ -34,13 +34,15 @@ jobs:
           docker push $REPO/email-provider-publisher-api:$TAG
           docker push $REPO/email-provider-kafka-exporter:$TAG
   
-  environment-configuration:
+  deploy:
+    needs:
+      - build-push 
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
-    steps:
+    steps:   
       - name: Install k3d
         run: |
           wget -q -O k3d https://github.com/k3d-io/k3d/releases/latest/download/k3d-linux-amd64
@@ -57,6 +59,10 @@ jobs:
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
           chmod +x skaffold
           sudo mv skaffold /usr/local/bin/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: skaffold-bin
+          path: /usr/local/bin/
 
       - name: Cluster create with k3d
         run: |
@@ -67,16 +73,6 @@ jobs:
         run: |
           echo "127.0.0.1 app-email-provider" | sudo tee -a /etc/hosts
 
-  deploy:
-    needs:
-      - build-push 
-      - environment-configuration
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:      
       - name: Create Kubernetes Secret
         run: |
           kubectl create secret generic email-provider-secrets \
