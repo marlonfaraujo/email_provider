@@ -72,10 +72,6 @@ jobs:
           k3d cluster create cluster-app --agents 2 --k3s-arg "--disable=traefik@server:*" --port "8080:80@loadbalancer" --port "8443:443@loadbalancer" --wait
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.6/deploy/static/provider/cloud/deploy.yaml
 
-      - name: Host configuration
-        run: |
-          echo "127.0.0.1 app-email-provider" | sudo tee -a /etc/hosts
-
       - name: Create Kubernetes Secret
         run: |
           kubectl create secret generic email-provider-secrets \
@@ -93,19 +89,12 @@ jobs:
         run: |
           skaffold run \
             --default-repo=$REPO
-  
-  health:
-    needs: deploy
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
 
-    steps:    
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Host configuration
+        run: |
+          echo "127.0.0.1 app-email-provider" | sudo tee -a /etc/hosts
       
-      - name: Check endpoint
+      - name: Health API
         run: |
           echo "Trying..."
           for i in {1..10}; do
