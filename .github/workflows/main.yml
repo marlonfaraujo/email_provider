@@ -83,6 +83,8 @@ jobs:
       - name: Deploy Kafka with Skaffold
         working-directory: ${{ github.workspace }}
         run: |
+          ls -la
+          ls -la ./k8s/kafka/
           skaffold run -f ./k8s/kafka/skaffold.yaml
 
       - name: Deploy API with Skaffold
