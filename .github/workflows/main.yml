@@ -32,15 +32,15 @@ jobs:
           docker push $REPO/email-provider-api:$TAG
           docker push $REPO/email-provider-publisher-api:$TAG
           docker push $REPO/email-provider-kafka-exporter:$TAG
+      
+      - name: Install k3d
+        run: |
+          curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: 'latest'
-
-      - name: Install k3d
-        run: |
-          curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 
       - name: Install Skaffold
         run: |
